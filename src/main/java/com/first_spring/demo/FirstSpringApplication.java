@@ -4,11 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FirstStringApplication {
+public class FirstSpringApplication {
 
 	public static void main(String[] args) {
 		// Testing commit
-		SpringApplication.run(FirstStringApplication.class, args);
+		SpringApplication.run(FirstSpringApplication.class, args);
 	}
 
 }
