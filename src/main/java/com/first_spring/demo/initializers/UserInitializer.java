@@ -1,14 +1,13 @@
 package com.first_spring.demo.initializers;
 
+import org.springframework.boot.CommandLineRunner;
+
 import com.first_spring.demo.entities.users.User;
 import com.first_spring.demo.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class UserInitializer implements CommandLineRunner {
-    @Autowired
+    // @Autowired
     private UserRepository userRepository;
 
     @Override

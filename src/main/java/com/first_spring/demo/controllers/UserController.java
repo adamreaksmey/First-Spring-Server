@@ -15,20 +15,20 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/users")
-    public String getFirstUserName() {
+    public List<User> getFirstUserName() {
         List<User> users = userRepository.findAll();
+        return users;
 
-        // Check if the list is not empty
-        if (!users.isEmpty()) {
-            // Get the first user in the list
-            User oneUser = users.get(0);
-            // Return the first user's name
-            return oneUser.getName();
-        }
+        // // Check if the list is not empty
+        // if (!users.isEmpty()) {
+        // // Get the first user in the list
+        // User oneUser = users.get(0);
+        // // Return the first user's name
+        // return oneUser.getName();
+        // }
 
-        System.out.println("No users found.");
-        return "No user found";
-
+        // System.out.println("No users found.");
+        // return "No user found";
     }
 
 }
