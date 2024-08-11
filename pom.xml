@@ -50,6 +50,29 @@
 		</java.version>
 	</properties>
 	<dependencies>
+		<!-- Spring Boot Starter Data JPA -->
+		<dependency>
+			<groupId>
+				org.springframework.boot
+			</groupId>
+			<artifactId>
+				spring-boot-starter-data-jpa
+			</artifactId>
+		</dependency>
+		
+		<!-- PostgreSQL Driver -->
+		<dependency>
+			<groupId>
+				org.postgresql
+			</groupId>
+			<artifactId>
+				postgresql
+			</artifactId>
+			<scope>
+				runtime
+			</scope>
+		</dependency>
+
 		<!-- Spring Boot Starter Web -->
 		<dependency>
 			<groupId>
@@ -59,6 +82,7 @@
 				spring-boot-starter-web
 			</artifactId>
 		</dependency>
+
 		<!-- Spring Boot Starter Test -->
 		<dependency>
 			<groupId>
@@ -71,7 +95,8 @@
 				test
 			</scope>
 		</dependency>
-		<!-- Spring Boot DevTools ( for automatic compilation )-->
+
+		<!-- Spring Boot DevTools ( for automatic compilation ) -->
 		<dependency>
 			<groupId>
 				org.springframework.boot
@@ -84,7 +109,7 @@
 			</optional>
 		</dependency>
 	</dependencies>
-	<build> 
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>
