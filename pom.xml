@@ -20,7 +20,7 @@
 		com.first-spring
 	</groupId>
 	<artifactId>
-		demo
+		first-spring
 	</artifactId>
 	<version>
 		0.0.1-SNAPSHOT
@@ -59,7 +59,6 @@
 				spring-boot-starter-data-jpa
 			</artifactId>
 		</dependency>
-		
 		<!-- PostgreSQL Driver -->
 		<dependency>
 			<groupId>
@@ -72,7 +71,6 @@
 				runtime
 			</scope>
 		</dependency>
-
 		<!-- Spring Boot Starter Web -->
 		<dependency>
 			<groupId>
@@ -82,7 +80,6 @@
 				spring-boot-starter-web
 			</artifactId>
 		</dependency>
-
 		<!-- Spring Boot Starter Test -->
 		<dependency>
 			<groupId>
@@ -95,7 +92,6 @@
 				test
 			</scope>
 		</dependency>
-
 		<!-- Spring Boot DevTools ( for automatic compilation ) -->
 		<dependency>
 			<groupId>
