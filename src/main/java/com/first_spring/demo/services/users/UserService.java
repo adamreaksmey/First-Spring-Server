@@ -33,4 +33,9 @@ public class UserService {
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
+
+    // customed delete by userId
+    public void _deleteUserById(String id) {
+        userRepository.deleteByUserId(id);
+    }
 }
