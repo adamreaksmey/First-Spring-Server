@@ -21,6 +21,7 @@ public class User {
 
     private String name;
     private String email;
+    private Long customedId;
 
     // // Constructors, Getters, and Setters
     // public User() {

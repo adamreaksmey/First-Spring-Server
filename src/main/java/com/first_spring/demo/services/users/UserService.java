@@ -24,6 +24,13 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    // public Optional<User> updateUserById(String id) {
+    // Optional<User> user = userRepository.findUserByUserId(id);
+    // if (!user.isPresent()) {
+    // return ;
+    // }
+    // }
+
     // Get all Users
     public List<User> getAllUsers() {
         return userRepository.findAll();

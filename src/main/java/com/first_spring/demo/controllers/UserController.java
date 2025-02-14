@@ -54,6 +54,7 @@ public class UserController {
             User user = userOptional.get();
             user.setName(userDetails.getName());
             user.setEmail(userDetails.getEmail());
+            user.setCustomedId(userDetails.getCustomedId());
             User updatedUser = userService.saveUser(user);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } else {
