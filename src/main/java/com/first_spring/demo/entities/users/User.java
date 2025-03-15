@@ -31,13 +31,15 @@ public class User {
     private Long id;
 
     @NotBlank(message = "Name is required")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "customed_id", nullable = false, unique = true)
+    @Column(name = "customed_id", nullable = true, unique = true)
     private Long customedId;
 
     // // Constructors, Getters, and Setters

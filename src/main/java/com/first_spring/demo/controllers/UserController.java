@@ -2,6 +2,7 @@ package com.first_spring.demo.controllers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.first_spring.demo.entities.users.User;
+import com.first_spring.demo.response.GlobalApiResponse;
 import com.first_spring.demo.services.users.UserService;
 
 import jakarta.validation.Valid;
@@ -27,6 +29,13 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
+    private static final Logger logger = Logger.getLogger(UserController.class.getName());
+
+    /**
+     * This annotation is used to automatically inject the UserService bean.
+     * It eliminates the need for manual setup of the UserService bean in the UserController.
+     */
     @Autowired
     private UserService userService;
 
@@ -36,9 +45,11 @@ public class UserController {
      * @return The created user
      */
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<GlobalApiResponse> createUser(@Valid @RequestBody User user) {
         User savedUser = userService.saveUser(user);
-        return ResponseEntity.status(201).body(savedUser);
+        System.out.println("message ==>: " + savedUser);
+        System.out.flush();
+        return ResponseEntity.status(201).body(GlobalApiResponse.success("User created successfully", savedUser));
     }
 
     /**

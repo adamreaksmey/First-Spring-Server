@@ -3,6 +3,7 @@ package com.first_spring.demo.exceptions;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -10,6 +11,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.first_spring.demo.response.GlobalApiResponse;
 
 /**
  * This class is responsible for handling global exceptions.
@@ -28,16 +31,16 @@ public class GlobalExceptionHandler {
      * @return The ResponseEntity with the errors
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<GlobalApiResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
+        ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
 
-        return ResponseEntity.badRequest().body(errors);
+        return ResponseEntity.badRequest()
+                .body(GlobalApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Validation failed", errors));
     }
 
     /**
@@ -48,23 +51,53 @@ public class GlobalExceptionHandler {
      * @return The ResponseEntity with the error
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneralExceptions(Exception ex) {
+    public ResponseEntity<GlobalApiResponse> handleGeneralExceptions(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(GlobalApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong",
+                        ex.getMessage()));
+    }
+
+    /**
+     * This method is responsible for handling data integrity violation exceptions.
+     * It is annotated with @ExceptionHandler to handle
+     * DataIntegrityViolationException.
+     * 
+     * @param ex The DataIntegrityViolationException to be handled
+     * @return The ResponseEntity with the error
+     */
+    public ResponseEntity<GlobalApiResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+
+        String message = ex.getRootCause().getMessage(); // Get the root cause message
+
+        if (message.contains("not-null property references a null")) {
+            String fieldName = message.substring(message.lastIndexOf(".") + 1); // Extract the field name
+            errorResponse.put(fieldName, "This field cannot be null.");
+        } else if (message.contains("duplicate key value")) {
+            errorResponse.put("error", "This value must be unique.");
+        } else {
+            errorResponse.put("error", "A database error occurred.");
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(GlobalApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Data integrity violation",
+                        errorResponse));
     }
 
     /**
      * This method is responsible for handling empty request body exceptions.
-     * It is annotated with @ExceptionHandler to handle HttpMessageNotReadableException.
+     * It is annotated with @ExceptionHandler to handle
+     * HttpMessageNotReadableException.
      * 
      * @param ex The HttpMessageNotReadableException to be handled
      * @return The ResponseEntity with the error
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, String>> handleEmptyRequestBody(HttpMessageNotReadableException ex) {
+    public ResponseEntity<GlobalApiResponse> handleEmptyRequestBody(HttpMessageNotReadableException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "Request body cannot be empty");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(GlobalApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Request body cannot be empty",
+                        errorResponse));
     }
 }
