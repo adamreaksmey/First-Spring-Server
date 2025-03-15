@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.first_spring.demo.entities.users.User;
 import com.first_spring.demo.services.users.UserService;
 
+import jakarta.validation.Valid;
+
 /**
  * This class is responsible for handling the user endpoints.
  * It is annotated with @RestController to indicate that it is a REST controller.
@@ -34,9 +36,9 @@ public class UserController {
      * @return The created user
      */
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User savedUser = userService.saveUser(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        return ResponseEntity.status(201).body(savedUser);
     }
 
     /**
