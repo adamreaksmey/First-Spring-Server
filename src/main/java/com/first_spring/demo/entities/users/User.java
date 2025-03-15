@@ -1,5 +1,6 @@
 package com.first_spring.demo.entities.users;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,6 +10,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * This class is responsible for representing a user in the application.
+ * It is annotated with @Entity to indicate that it is an entity in the database.
+ * It is annotated with @Table to indicate the name of the table in the database.
+ * It is annotated with @Data to generate the getters and setters.
+ * It is annotated with @NoArgsConstructor to generate a no-argument constructor.
+ */
 @Entity
 @Table(name = "app_user")
 @Data
@@ -21,6 +29,7 @@ public class User {
 
     private String name;
     private String email;
+    @Column(name = "customed_id", nullable = false, unique = true)
     private Long customedId;
 
     // // Constructors, Getters, and Setters

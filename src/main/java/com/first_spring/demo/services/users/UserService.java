@@ -24,13 +24,6 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    // public Optional<User> updateUserById(String id) {
-    // Optional<User> user = userRepository.findUserByUserId(id);
-    // if (!user.isPresent()) {
-    // return ;
-    // }
-    // }
-
     // Get all Users
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -42,7 +35,7 @@ public class UserService {
     }
 
     // customed delete by userId
-    public void _deleteUserById(String id) {
-        userRepository.deleteByUserId(id);
+    public void _deleteUserById(Long id) {
+        userRepository.deleteByCustomedId(id);
     }
 }

@@ -4,7 +4,11 @@ import org.springframework.boot.CommandLineRunner;
 
 import com.first_spring.demo.repositories.UserRepository;
 
-// @Component
+/**
+ * This class is responsible for initializing the application with some default users.
+ * It implements CommandLineRunner to execute the initialization process when the application starts.
+ * The UserRepository is used to save the default users to the database.
+ */
 public class UserInitializer implements CommandLineRunner {
     // @Autowired
     private UserRepository userRepository;
