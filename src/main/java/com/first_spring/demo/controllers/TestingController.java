@@ -1,5 +1,8 @@
 package com.first_spring.demo.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestingController {
     @GetMapping("/hello")
-    public String hello() {
-        return "Hello, Adam!";
+    public Map<String, String> hello() {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Hello, Adam!");
+        return response;
     }
 }
