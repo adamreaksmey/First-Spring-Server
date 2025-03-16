@@ -1,5 +1,7 @@
 package com.first_spring.demo.repositories;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     void deleteByCustomedId(Long customedId);
 
+    /**
+     * Find a User by username
+     * 
+     * @param username The username of the User to be found
+     */
+    Optional<User> findByUsername(String username);
     // /**
     // * Delete a User by customedId
     // *
