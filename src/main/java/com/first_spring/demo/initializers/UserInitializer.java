@@ -2,7 +2,7 @@ package com.first_spring.demo.initializers;
 
 import org.springframework.boot.CommandLineRunner;
 
-import com.first_spring.demo.repositories.UserRepository;
+// import com.first_spring.demo.repositories.UserRepository;
 
 /**
  * This class is responsible for initializing the application with some default users.
@@ -11,7 +11,7 @@ import com.first_spring.demo.repositories.UserRepository;
  */
 public class UserInitializer implements CommandLineRunner {
     // @Autowired
-    private UserRepository userRepository;
+    // private UserRepository userRepository;
 
     @Override
     public void run(String... args) throws Exception {
