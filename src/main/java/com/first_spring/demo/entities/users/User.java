@@ -12,13 +12,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 /**
  * This class is responsible for representing a user in the application.
- * It is annotated with @Entity to indicate that it is an entity in the database.
- * It is annotated with @Table to indicate the name of the table in the database.
+ * It is annotated with @Entity to indicate that it is an entity in the
+ * database.
+ * It is annotated with @Table to indicate the name of the table in the
+ * database.
  * It is annotated with @Data to generate the getters and setters.
- * It is annotated with @NoArgsConstructor to generate a no-argument constructor.
+ * It is annotated with @NoArgsConstructor to generate a no-argument
+ * constructor.
  */
 @Entity
 @Table(name = "app_user")
@@ -39,7 +41,7 @@ public class User {
     private String username;
 
     @NotBlank(message = "Password is required")
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = true)
     private String password;
 
     @NotBlank(message = "Email is required")
@@ -49,37 +51,4 @@ public class User {
 
     @Column(name = "customed_id", nullable = true, unique = true)
     private Long customedId;
-
-    // // Constructors, Getters, and Setters
-    // public User() {
-    // }
-
-    // public User(String name, String email) {
-    //     this.name = name;
-    //     this.email = email;
-    // }
-
-    // public Long getId() {
-    //     return id;
-    // }
-
-    // public void setId(Long id) {
-    //     this.id = id;
-    // }
-
-    // public String getName() {
-    //     return name;
-    // }
-
-    // public void setName(String name) {
-    //     this.name = name;
-    // }
-
-    // public String getEmail() {
-    //     return email;
-    // }
-
-    // public void setEmail(String email) {
-    //     this.email = email;
-    // }
 }
