@@ -6,17 +6,25 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.first_spring.demo.exceptions.FilterExceptionHandler;
+import com.first_spring.demo.security.JwtFilter;
+import com.first_spring.demo.security.JwtUtil;
 
 @Configuration
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    public SecurityConfig(UserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
     }
 
     // ✅ Defines AuthenticationManager Bean
@@ -41,15 +49,35 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    // ✅ Security Filter Chain ( for configuring security rules )
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Public access for auth endpoints
-                        .anyRequest().authenticated())
-                .authenticationProvider(authenticationProvider());
+                        .requestMatchers("/auth/**").permitAll() // ✅ Allow authentication routes
+                        // .requestMatchers("/api/users/**").authenticated() // ✅ Require authentication for users
+                        .requestMatchers("/api/users/**").permitAll()
+                        .anyRequest()
+                        .authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            // ✅ Call custom unauthorized handler instead of forwarding
+                            FilterExceptionHandler.handleUnauthorized(response);
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            // ✅ Call custom forbidden handler instead of forwarding
+                            FilterExceptionHandler.handleForbidden(response);
+                        }))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // ✅ Ensure JWT
+                                                                                                         // is processed
 
         return http.build();
+    }
+
+    @Bean
+    public JwtFilter jwtAuthenticationFilter() {
+        return new JwtFilter(jwtUtil, userDetailsService);
     }
 }

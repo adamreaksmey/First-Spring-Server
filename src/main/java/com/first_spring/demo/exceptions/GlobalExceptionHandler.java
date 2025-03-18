@@ -2,6 +2,7 @@ package com.first_spring.demo.exceptions;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -68,7 +69,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalApiResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         Map<String, String> errorResponse = new HashMap<>();
 
-        String message = ex.getRootCause().getMessage(); // Get the root cause message
+        String message = Optional.ofNullable(ex.getRootCause())
+                .map(Throwable::getMessage)
+                .orElse(ex.getMessage()); // Get the root cause message
 
         if (message.contains("not-null property references a null")) {
             String fieldName = message.substring(message.lastIndexOf(".") + 1); // Extract the field name
