@@ -1,7 +1,7 @@
 # Java Spring Boot Backend API
 
 ## 📌 Overview
-Welcome to my first Java Spring Boot project as a senior developer! 🚀 This repository is a foundational backend API that implements key backend concepts such as authentication, routing, controllers, and role-based access control. The project is designed to be a solid starting point for backend development with Java Spring Boot.
+Welcome to my first Java Spring Boot project! 🚀 This repository is a foundational backend API that implements key backend concepts such as authentication, routing, controllers, and role-based access control. The project is designed to be a solid starting point for backend development with Java Spring Boot.
 
 ## 🛠️ Features
 - 🔑 **JWT Authentication** - Secure login and access using JSON Web Tokens (JWT)
