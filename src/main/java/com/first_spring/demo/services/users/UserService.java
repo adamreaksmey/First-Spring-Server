@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.first_spring.demo.entities.users.User;
+import com.first_spring.demo.exceptions.DuplicateResourceException;
 import com.first_spring.demo.repositories.UserRepository;
 
 @Service
@@ -16,14 +18,23 @@ public class UserService {
 
     // Create or Update a User
     public User saveUser(User user) {
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DuplicateResourceException(ex);
+        }
     }
 
     // Get a User by ID
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
- 
+
+    // Get user by email
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
+
     // Get all Users
     public List<User> getAllUsers() {
         return userRepository.findAll();
