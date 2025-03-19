@@ -14,8 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.first_spring.demo.exceptions.FilterExceptionHandler;
-import com.first_spring.demo.security.JwtFilter;
 import com.first_spring.demo.security.JwtUtil;
+import com.first_spring.demo.security.filters.JwtFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -55,8 +55,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // ✅ Allow authentication routes
-                        // .requestMatchers("/api/users/**").authenticated() // ✅ Require authentication for users
+                        .requestMatchers("/api/auth/login").permitAll()
+                        // .requestMatchers("/api/users/**").authenticated() // ✅ Require authentication
+                        // for users
                         .requestMatchers("/api/users/**").permitAll()
                         .anyRequest()
                         .authenticated())

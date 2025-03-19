@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ import com.first_spring.demo.security.JwtUtil;
 import com.first_spring.demo.services.users.UserService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -70,6 +71,11 @@ public class AuthController {
         String token = jwtUtil.generateToken(userDetails.getUsername());
 
         return ResponseEntity.ok(GlobalApiResponse.success("Login successful", Map.of("token", token)));
+    }
+
+    @GetMapping("/me")
+    public void getAuthorizedUser() {
+
     }
 
 }

@@ -12,6 +12,12 @@ public class DuplicateResourceException extends RuntimeException {
         super(parseMessage(ex));
     }
 
+    /**
+     * Parsed to be passed into parent constructor.
+     * 
+     * @param ex
+     * @return
+     */
     private static String parseMessage(DataIntegrityViolationException ex) {
         String message = Optional.ofNullable(ex.getRootCause())
                 .map(Throwable::getMessage)
