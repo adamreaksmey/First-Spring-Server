@@ -1,4 +1,4 @@
-package com.first_spring.demo.security.bean;
+package com.first_spring.demo.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
 import com.first_spring.demo.exceptions.FilterExceptionHandler;
-import com.first_spring.demo.security.JwtUtil;
 import com.first_spring.demo.security.filters.JwtFilter;
+import com.first_spring.demo.security.utils.JwtUtil;
 
 @Configuration
 public class SecurityConfig {

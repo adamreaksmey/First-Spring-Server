@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.first_spring.demo.entities.users.User;
 import com.first_spring.demo.response.GlobalApiResponse;
-import com.first_spring.demo.security.JwtUtil;
+import com.first_spring.demo.security.utils.JwtUtil;
 import com.first_spring.demo.services.users.UserService;
 
 @RestController

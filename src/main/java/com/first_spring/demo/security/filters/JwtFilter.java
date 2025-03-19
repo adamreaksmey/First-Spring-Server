@@ -13,8 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 
-import com.first_spring.demo.security.JwtUtil;
 import com.first_spring.demo.security.annotations.Protected;
+import com.first_spring.demo.security.utils.JwtUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

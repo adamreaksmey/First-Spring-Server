@@ -1,4 +1,4 @@
-package com.first_spring.demo.security;
+package com.first_spring.demo.security.utils;
 
 import java.util.Date;
 import java.util.function.Function;

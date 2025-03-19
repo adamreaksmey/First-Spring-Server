@@ -1,4 +1,4 @@
-package com.first_spring.demo.security;
+package com.first_spring.demo.security.users;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -8,10 +8,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.first_spring.demo.entities.users.User;
 
-public class SecurityUser implements UserDetails {
+/**
+ * SecurityUser is a bridge between your User entity and Spring Security.
+ * It ensures that your User object works with Spring Security authentication.
+ */
+public class CustomUserDetails implements UserDetails {
     private final User user;
 
-    public SecurityUser(User user) {
+    public CustomUserDetails(User user) {
         this.user = user;
     }
 
