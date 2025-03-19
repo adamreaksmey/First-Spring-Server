@@ -52,6 +52,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 .map(method -> method.hasMethodAnnotation(Protected.class))
                 .orElse(false);
 
+        System.out.println("Handler: " + handler);
+        System.out.println("isProtected: " + isProtected);
+
         // ✅ If method is NOT @Protected, skip authentication check
         if (!isProtected) {
             chain.doFilter(request, response);
@@ -74,7 +77,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
         String username = jwtUtil.extractUsername(token);
 
-        // 3️⃣ If username is null or user is already authenticated, throw unauthorized error
+        // 3️⃣ If username is null or user is already authenticated, throw unauthorized
+        // error
         if (username == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
             return;

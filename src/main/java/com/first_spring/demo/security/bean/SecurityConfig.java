@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
 import com.first_spring.demo.exceptions.FilterExceptionHandler;
 import com.first_spring.demo.security.JwtUtil;
@@ -55,12 +55,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll()
-                        // .requestMatchers("/api/users/**").authenticated() // ✅ Require authentication
-                        // for users
-                        .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        // // .requestMatchers("/api/users/**").authenticated() // ✅ Require
+                        // authentication
+                        // // for users
+                        // .requestMatchers("/api/users/**").permitAll()
                         .anyRequest()
-                        .authenticated())
+                        .permitAll())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             // ✅ Call custom unauthorized handler instead of forwarding
@@ -71,7 +72,7 @@ public class SecurityConfig {
                             FilterExceptionHandler.handleForbidden(response);
                         }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // ✅ Ensure JWT
+                .addFilterBefore(jwtAuthenticationFilter(), SecurityContextHolderAwareRequestFilter.class); // ✅ Ensure JWT
                                                                                                          // is processed
 
         return http.build();

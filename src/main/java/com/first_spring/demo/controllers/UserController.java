@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.first_spring.demo.entities.users.User;
 import com.first_spring.demo.response.GlobalApiResponse;
+import com.first_spring.demo.security.annotations.Protected;
 import com.first_spring.demo.services.users.UserService;
 
 import jakarta.validation.Valid;
@@ -119,5 +120,16 @@ public class UserController {
 
         userService.deleteUserById(id);
         return ResponseEntity.ok(GlobalApiResponse.success("User deleted successfully", null));
+    }
+
+    /**
+     * Get the currently authenticated user
+     * 
+     * @return The currently authenticated user
+     */
+    @GetMapping("/me")
+    @Protected
+    public String getAuthorizedUser() {
+        return "hello world";
     }
 }

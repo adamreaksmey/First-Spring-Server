@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.first_spring.demo.entities.users.User;
 import com.first_spring.demo.response.GlobalApiResponse;
 import com.first_spring.demo.security.JwtUtil;
+import com.first_spring.demo.security.annotations.Protected;
 import com.first_spring.demo.services.users.UserService;
 
 @RestController
@@ -61,6 +61,7 @@ public class AuthController {
      * @return ResponseEntity<GlobalApiResponse>
      */
     @PostMapping("/login")
+    @Protected
     public ResponseEntity<GlobalApiResponse> login(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
@@ -72,10 +73,4 @@ public class AuthController {
 
         return ResponseEntity.ok(GlobalApiResponse.success("Login successful", Map.of("token", token)));
     }
-
-    @GetMapping("/me")
-    public void getAuthorizedUser() {
-
-    }
-
 }
