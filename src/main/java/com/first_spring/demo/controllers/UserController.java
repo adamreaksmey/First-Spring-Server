@@ -6,6 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -129,7 +132,27 @@ public class UserController {
      */
     @GetMapping("/me")
     @Protected
-    public String getAuthorizedUser() {
-        return "hello world";
+    public ResponseEntity<GlobalApiResponse> getAuthorizedUser() {
+        // Get the authenticated user from SecurityContext
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if authentication exists and is valid
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(GlobalApiResponse.error(401, "User is not authenticated", null));
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        // Fetch full user details from database (if needed)
+        Optional<User> user = userService.findByUsername(userDetails.getUsername());
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(GlobalApiResponse.error(404, "User not found", null));
+        }
+
+        // Return user data in API response
+        return ResponseEntity.ok(GlobalApiResponse.success("Authenticated user retrieved successfully", user.get()));
     }
 }

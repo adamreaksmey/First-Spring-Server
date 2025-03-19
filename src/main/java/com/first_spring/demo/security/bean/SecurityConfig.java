@@ -55,25 +55,25 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // // .requestMatchers("/api/users/**").authenticated() // ✅ Require
-                        // authentication
-                        // // for users
-                        // .requestMatchers("/api/users/**").permitAll()
+                        /**
+                         * Configure authentication rules for different endpoints here.
+                         */
+                        .requestMatchers("/api/users").permitAll()
+                        .requestMatchers("/api/users/**").authenticated()
                         .anyRequest()
                         .permitAll())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            // ✅ Call custom unauthorized handler instead of forwarding
+                            // Call custom unauthorized handler instead of forwarding
                             FilterExceptionHandler.handleUnauthorized(response);
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            // ✅ Call custom forbidden handler instead of forwarding
+                            // Call custom forbidden handler instead of forwarding
                             FilterExceptionHandler.handleForbidden(response);
                         }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter(), SecurityContextHolderAwareRequestFilter.class); // ✅ Ensure JWT
-                                                                                                         // is processed
+                // ✅ Ensure JWT is processed
+                .addFilterBefore(jwtAuthenticationFilter(), SecurityContextHolderAwareRequestFilter.class);
 
         return http.build();
     }

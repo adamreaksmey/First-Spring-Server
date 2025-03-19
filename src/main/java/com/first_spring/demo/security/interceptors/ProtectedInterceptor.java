@@ -10,9 +10,15 @@ import com.first_spring.demo.security.annotations.Protected;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Interceptor to check if a request handler method is protected by the @Protected annotation.
+ */
 @Component
 public class ProtectedInterceptor implements HandlerInterceptor {
     @Override
+    /**
+     * This method is called before the request handler method is executed
+     */
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull Object handler) throws Exception {
 

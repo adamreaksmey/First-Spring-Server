@@ -7,6 +7,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.first_spring.demo.security.interceptors.ProtectedInterceptor;
 
+/**
+ * This class is responsible for configuring the web application.
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
         private final ProtectedInterceptor protectedInterceptor;
@@ -16,6 +19,9 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
+    /**
+     * Add the ProtectedInterceptor to the InterceptorRegistry
+     */
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(protectedInterceptor);
     }
