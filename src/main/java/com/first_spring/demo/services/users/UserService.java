@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.first_spring.demo.entities.users.User;
@@ -16,12 +17,19 @@ import com.first_spring.demo.repositories.UserRepository;
 
 @Service
 public class UserService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; // Inject password encoder
+
     @Autowired
-    private UserRepository userRepository;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     // Create or Update a User
     public User saveUser(User user) {
         try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             return userRepository.save(user);
         } catch (DataIntegrityViolationException ex) {
             throw new DuplicateResourceException(ex);

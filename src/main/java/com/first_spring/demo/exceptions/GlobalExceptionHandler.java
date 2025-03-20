@@ -104,4 +104,15 @@ public class GlobalExceptionHandler {
                 .body(GlobalApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Request body cannot be empty",
                         errorResponse));
     }
+
+    /*
+     * This method is responsible for handling invalid field update exceptions.
+     * 
+     * @param ex The InvalidFieldUpdateException to be handled
+     */
+    @ExceptionHandler(InvalidFieldUpdateException.class)
+    public ResponseEntity<GlobalApiResponse> handleInvalidFieldUpdate(InvalidFieldUpdateException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(GlobalApiResponse.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null));
+    }
 }

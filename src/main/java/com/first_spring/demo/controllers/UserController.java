@@ -1,23 +1,25 @@
 package com.first_spring.demo.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.first_spring.demo.entities.users.User;
+import com.first_spring.demo.entities.utils.EntityUpdater;
 import com.first_spring.demo.response.GlobalApiResponse;
-import com.first_spring.demo.security.annotations.Protected;
 import com.first_spring.demo.services.users.UserService;
 
 import jakarta.validation.Valid;
@@ -49,6 +51,7 @@ public class UserController {
     @PostMapping
     // @Protected
     public ResponseEntity<GlobalApiResponse> createUser(@Valid @RequestBody User user) {
+        // The incoming password isnt being encrypted!!!
         User savedUser = userService.saveUser(user);
         return ResponseEntity.status(201).body(GlobalApiResponse.success("User created successfully", savedUser));
     }
@@ -75,13 +78,13 @@ public class UserController {
      * @return All users in the database
      */
     @GetMapping
-    @Protected
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<GlobalApiResponse> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (users.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(users, HttpStatus.OK);
+
+        return ResponseEntity.ok(GlobalApiResponse.success("Users retrieved successfully", users));
     }
 
     /**
@@ -91,20 +94,22 @@ public class UserController {
      * @param userDetails The updated user details
      * @return The updated user
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<GlobalApiResponse> updateUser(@PathVariable Long id,
+            @RequestBody Map<String, Object> details) {
         Optional<User> userOptional = userService.getUserById(id);
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setName(userDetails.getName());
-            user.setEmail(userDetails.getEmail());
-            user.setCustomedId(userDetails.getCustomedId());
-            User updatedUser = userService.saveUser(user);
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(404).body(GlobalApiResponse.error(404, "User not found", null));
         }
+
+        User user = userOptional.get();
+
+        Set<String> excludedFields = Set.of("id", "password", "createdAt", "updatedAt");
+        EntityUpdater.updateEntityFields(user, details, excludedFields);
+
+        User updatedUser = userService.saveUser(user);
+        return ResponseEntity.ok(GlobalApiResponse.success("User updated successfully", updatedUser));
     }
 
     /**
