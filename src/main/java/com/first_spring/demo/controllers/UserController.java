@@ -6,9 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +47,7 @@ public class UserController {
      * @return The created user
      */
     @PostMapping
+    // @Protected
     public ResponseEntity<GlobalApiResponse> createUser(@Valid @RequestBody User user) {
         User savedUser = userService.saveUser(user);
         return ResponseEntity.status(201).body(GlobalApiResponse.success("User created successfully", savedUser));
@@ -77,6 +75,7 @@ public class UserController {
      * @return All users in the database
      */
     @GetMapping
+    @Protected
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (users.isEmpty()) {
@@ -131,28 +130,12 @@ public class UserController {
      * @return The currently authenticated user
      */
     @GetMapping("/me")
-    @Protected
     public ResponseEntity<GlobalApiResponse> getAuthorizedUser() {
-        // Get the authenticated user from SecurityContext
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Check if authentication exists and is valid
-        if (authentication == null || !authentication.isAuthenticated()
-                || authentication.getPrincipal().equals("anonymousUser")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(GlobalApiResponse.error(401, "User is not authenticated", null));
-        }
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        // Fetch full user details from database (if needed)
-        Optional<User> user = userService.findByUsername(userDetails.getUsername());
+        Optional<User> user = userService.getAuthorizedUser();
         if (user.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(GlobalApiResponse.error(404, "User not found", null));
+            return ResponseEntity.status(404).body(GlobalApiResponse.error(404, "User not found", null));
         }
 
-        // Return user data in API response
-        return ResponseEntity.ok(GlobalApiResponse.success("Authenticated user retrieved successfully", user.get()));
+        return ResponseEntity.ok(GlobalApiResponse.success("User retrieved successfully", user.get()));
     }
 }

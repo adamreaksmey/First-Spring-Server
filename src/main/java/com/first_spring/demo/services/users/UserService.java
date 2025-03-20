@@ -5,6 +5,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.first_spring.demo.entities.users.User;
@@ -28,6 +31,24 @@ public class UserService {
     // Get a User by ID
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
+    }
+
+    // Get logged in user
+    public Optional<User> getAuthorizedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return Optional.empty();
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof UserDetails userDetails)) {
+            return Optional.empty();
+        }
+
+        // Fetch full user details from database
+        return findByUsername(userDetails.getUsername());
     }
 
     // Get user by email

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.first_spring.demo.exceptions.FilterExceptionHandler;
 import com.first_spring.demo.security.annotations.Protected;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,9 +25,12 @@ public class ProtectedInterceptor implements HandlerInterceptor {
 
         // ✅ Check if the request handler has @Protected annotation
         if (handler instanceof HandlerMethod method && method.hasMethodAnnotation(Protected.class)) {
+            // Log the handler method
+            System.out.println("Protected Interceptor Is Running: " + handler);
+            
             // 🔒 Authentication required for this route
             if (request.getHeader("Authorization") == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required");
+                FilterExceptionHandler.handleUnauthorized(response);
                 return false; // Block request
             }
         }

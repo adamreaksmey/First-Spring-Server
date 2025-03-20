@@ -42,10 +42,10 @@ public class JwtFilter extends OncePerRequestFilter {
         /**
          * ------------ ENTERING ANNOTATION REQUEST CHECK ------------
          */
-        // ✅ Get the handler (controller method) for the request
+        // Get the handler (controller method) for the request
         Object handler = request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
 
-        // ✅ If the handler is a controller method, check for @Protected annotation
+        // If the handler is a controller method, check for @Protected annotation
         boolean isProtected = Optional.ofNullable(handler)
                 .filter(HandlerMethod.class::isInstance)
                 .map(HandlerMethod.class::cast)
@@ -55,7 +55,7 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("Handler: " + handler);
         System.out.println("isProtected: " + isProtected);
 
-        // ✅ If method is NOT @Protected, skip authentication check
+        // If method is NOT @Protected, skip authentication check
         if (!isProtected) {
             chain.doFilter(request, response);
             return;
