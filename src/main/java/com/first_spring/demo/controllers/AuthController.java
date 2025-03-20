@@ -64,6 +64,11 @@ public class AuthController {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
 
+        if (username == null || password == null) {
+            return ResponseEntity.badRequest()
+                    .body(GlobalApiResponse.error(400, "Both username and password are required", null));
+        }
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);

@@ -34,12 +34,6 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // ✅ Defines Password Encoder (for hashing passwords)
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     // ✅ Authentication Provider (used for verifying user credentials)
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -47,6 +41,12 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+
+    // ✅ Defines Password Encoder (for hashing passwords)
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     // ✅ Security Filter Chain ( for configuring security rules )

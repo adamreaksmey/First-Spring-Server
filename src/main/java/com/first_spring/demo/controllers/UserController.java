@@ -51,7 +51,6 @@ public class UserController {
     @PostMapping
     // @Protected
     public ResponseEntity<GlobalApiResponse> createUser(@Valid @RequestBody User user) {
-        // The incoming password isnt being encrypted!!!
         User savedUser = userService.saveUser(user);
         return ResponseEntity.status(201).body(GlobalApiResponse.success("User created successfully", savedUser));
     }
@@ -81,7 +80,7 @@ public class UserController {
     public ResponseEntity<GlobalApiResponse> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (users.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(GlobalApiResponse.error(204, "No users found", null));
         }
 
         return ResponseEntity.ok(GlobalApiResponse.success("Users retrieved successfully", users));

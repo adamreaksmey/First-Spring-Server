@@ -29,6 +29,7 @@ public class UserService {
     // Create or Update a User
     public User saveUser(User user) {
         try {
+            // Encode the password before saving
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             return userRepository.save(user);
         } catch (DataIntegrityViolationException ex) {
