@@ -1,5 +1,7 @@
 package com.first_spring.demo.security.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,14 +29,14 @@ public class SecurityConfig {
         this.jwtUtil = jwtUtil;
     }
 
-    // ✅ Defines AuthenticationManager Bean
+    // Defines AuthenticationManager Bean
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // ✅ Authentication Provider (used for verifying user credentials)
+    // Authentication Provider (used for verifying user credentials)
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -43,13 +45,23 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    // ✅ Defines Password Encoder (for hashing passwords)
+    // Public Routes
+    private static final List<String> PUBLIC_ROUTES = List.of(
+            "/api/auth/**",
+            "/api/users");
+
+    // Public routes getter
+    public static List<String> getPublicRoutes() {
+        return PUBLIC_ROUTES;
+    }
+
+    // Defines Password Encoder (for hashing passwords)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Security Filter Chain ( for configuring security rules )
+    // Security Filter Chain ( for configuring security rules )
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -58,13 +70,14 @@ public class SecurityConfig {
                         /**
                          * Configure authentication rules for different endpoints here.
                          */
-                        .requestMatchers("/api/users").permitAll()
-                        .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers(PUBLIC_ROUTES.toArray(new String[0])).permitAll()
+                        // .requestMatchers("/api/users/**").authenticated()
                         .anyRequest()
                         .permitAll())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             // Call custom unauthorized handler instead of forwarding
+                            System.out.println("running from authenticationEntryPoint");
                             FilterExceptionHandler.handleUnauthorized(response);
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
@@ -72,7 +85,7 @@ public class SecurityConfig {
                             FilterExceptionHandler.handleForbidden(response);
                         }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // ✅ Ensure JWT is processed
+                // Ensure JWT is processed
                 .addFilterBefore(jwtAuthenticationFilter(), SecurityContextHolderAwareRequestFilter.class);
 
         return http.build();
@@ -80,6 +93,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtFilter jwtAuthenticationFilter() {
-        return new JwtFilter(jwtUtil, userDetailsService);
+        return new JwtFilter(jwtUtil, userDetailsService, PUBLIC_ROUTES);
     }
 }

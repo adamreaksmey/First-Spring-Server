@@ -1,12 +1,17 @@
 package com.first_spring.demo.security.utils;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 /**
@@ -15,10 +20,14 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
+    private final SecretKey secretKey;
+
     /**
-     * The secret key for the JWT token.
+     * Load the secret key from application.properties and decode it.
      */
-    private final String SECRET_KEY = "super_secret_key"; // 🔥 Change this in production
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
+    }
 
     /**
      * Generate a JWT token for a given username.
@@ -31,7 +40,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours validity
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .signWith(secretKey, SignatureAlgorithm.HS256) // ✅ Use secure key
                 .compact();
     }
 
@@ -58,11 +67,11 @@ public class JwtUtil {
     /**
      * Extract a claim from a JWT token.
      * 
-     * @param token The JWT token to extract the claim from.
+     * @param token          The JWT token to extract the claim from.
      * @param claimsResolver The function to extract the claim from the JWT token.
      * @return The claim of the JWT token.
      */
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -75,7 +84,7 @@ public class JwtUtil {
      */
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .setSigningKey(secretKey) // ✅ Load key dynamically
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -84,7 +93,7 @@ public class JwtUtil {
     /**
      * Check if a JWT token is valid.
      * 
-     * @param token The JWT token to check if it is valid.
+     * @param token    The JWT token to check if it is valid.
      * @param username The username of the JWT token.
      * @return True if the JWT token is valid, false otherwise.
      */

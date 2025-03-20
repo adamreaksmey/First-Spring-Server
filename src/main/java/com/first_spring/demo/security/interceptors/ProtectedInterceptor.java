@@ -30,6 +30,7 @@ public class ProtectedInterceptor implements HandlerInterceptor {
             
             // 🔒 Authentication required for this route
             if (request.getHeader("Authorization") == null) {
+                System.out.println("Authorization Header is missing");
                 FilterExceptionHandler.handleUnauthorized(response);
                 return false; // Block request
             }

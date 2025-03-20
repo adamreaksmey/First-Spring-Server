@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.first_spring.demo.entities.users.User;
 import com.first_spring.demo.entities.utils.EntityUpdater;
 import com.first_spring.demo.response.GlobalApiResponse;
+import com.first_spring.demo.security.annotations.Protected;
 import com.first_spring.demo.services.users.UserService;
 
 import jakarta.validation.Valid;
@@ -77,6 +78,7 @@ public class UserController {
      * @return All users in the database
      */
     @GetMapping
+    // @Protected
     public ResponseEntity<GlobalApiResponse> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (users.isEmpty()) {
@@ -134,6 +136,7 @@ public class UserController {
      * @return The currently authenticated user
      */
     @GetMapping("/me")
+    @Protected
     public ResponseEntity<GlobalApiResponse> getAuthorizedUser() {
         Optional<User> user = userService.getAuthorizedUser();
         if (user.isEmpty()) {

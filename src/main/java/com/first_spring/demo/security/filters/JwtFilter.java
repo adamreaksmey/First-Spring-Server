@@ -1,7 +1,7 @@
 package com.first_spring.demo.security.filters;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,11 +9,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerMapping;
 
-import com.first_spring.demo.security.annotations.Protected;
+import com.first_spring.demo.exceptions.FilterExceptionHandler;
 import com.first_spring.demo.security.utils.JwtUtil;
 
 import jakarta.servlet.FilterChain;
@@ -24,11 +23,14 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final List<String> publicRoutes;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     // Constructor
-    public JwtFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public JwtFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService, List<String> publicRoutes) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.publicRoutes = publicRoutes;
     }
 
     /**
@@ -39,37 +41,22 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain chain)
             throws ServletException, IOException {
 
-        /**
-         * ------------ ENTERING ANNOTATION REQUEST CHECK ------------
-         */
-        // Get the handler (controller method) for the request
-        Object handler = request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
-
-        // If the handler is a controller method, check for @Protected annotation
-        boolean isProtected = Optional.ofNullable(handler)
-                .filter(HandlerMethod.class::isInstance)
-                .map(HandlerMethod.class::cast)
-                .map(method -> method.hasMethodAnnotation(Protected.class))
-                .orElse(false);
-
-        System.out.println("Handler: " + handler);
-        System.out.println("isProtected: " + isProtected);
-
-        // If method is NOT @Protected, skip authentication check
-        if (!isProtected) {
-            chain.doFilter(request, response);
-            return;
-        }
-        /**
-         * ------------ END ANNOTATION REQUEST CHECK ------------
-         */
-
         // 1️⃣ Get Authorization Header
         String authorizationHeader = request.getHeader("Authorization");
 
+        String requestURI = request.getRequestURI();
+
+        // If the route is public, skip authentication
+        if (isPublicRoute(requestURI)) {
+            System.out.println("🟢 Skipping JWT authentication for public route: " + requestURI);
+            chain.doFilter(request, response);
+            return;
+        }
+
         // 2️⃣ If token is null, throw unauthorized error
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required");
+            System.out.println("running from doFilterInternal");
+            FilterExceptionHandler.handleUnauthorized(response);
             return;
         }
 
@@ -101,5 +88,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 6️⃣ Continue request processing
         chain.doFilter(request, response);
+    }
+
+    // ✅ Check if a route is public
+    private boolean isPublicRoute(String requestURI) {
+        return publicRoutes.stream().anyMatch(pattern -> pathMatcher.match(pattern, requestURI));
     }
 }
