@@ -58,6 +58,7 @@ public class SecurityConfig {
                         /**
                          * Configure authentication rules for different endpoints here.
                          */
+                        .requestMatchers("/api/users").permitAll()
                         .requestMatchers("/api/users/**").authenticated()
                         .anyRequest()
                         .permitAll())
